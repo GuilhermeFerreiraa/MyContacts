@@ -1,6 +1,6 @@
 import { styled } from 'styled-components';
 
-export const Button = styled.button`
+export default styled.button`
  color: #fff;
  width: 100%;
  height: 52px;
@@ -22,7 +22,7 @@ export const Button = styled.button`
  }
 
  &:disabled {
-  background-color: #CCCCCC;
+  background-color: #cccccc;
   cursor: default;
  }
 `;
