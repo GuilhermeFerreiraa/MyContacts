@@ -15,7 +15,11 @@ import Modal from '../../components/Modal';
 export default function Home() {
   return (
     <Container>
-      <Modal />
+      <Modal
+        danger
+        description="Esta ação não poderá ser desfeita!"
+        title={'Tem certeza que deseja remover o contato "Guilherme Ferreira" '}
+      />
       <InputSearchContainer>
         <input type="text" placeholder="Pesquisar contato..." />
       </InputSearchContainer>
