@@ -10,16 +10,18 @@ import {
 import arrow from '../../assets/images/icons/arrow.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import trash from '../../assets/images/icons/delete.svg';
-import Modal from '../../components/Modal';
+import Loader from '../../components/Loader';
+// import Modal from '../../components/Modal';
 
 export default function Home() {
   return (
     <Container>
-      <Modal
+      <Loader />
+      {/* <Modal
         danger
         description="Esta ação não poderá ser desfeita!"
         title={'Tem certeza que deseja remover o contato "Guilherme Ferreira" '}
-      />
+      /> */}
       <InputSearchContainer>
         <input type="text" placeholder="Pesquisar contato..." />
       </InputSearchContainer>
