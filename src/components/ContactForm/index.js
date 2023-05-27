@@ -6,14 +6,14 @@ import Input from '../Input';
 import Select from '../Select';
 import { ButtonContainer, Form } from './styles';
 import isEmailValid from '../../utils/isEmailValid';
+import useErrors from '../../hooks/useErrors';
 
 export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [category, setCategory] = useState('');
-  const [errors, setErrors] = useState([]);
-
+  const { setError, removeError, getErrorMessageByFieldName } = useErrors();
   // One way data binding - react = single source of truth
   // Two way data binding - angular e vue
 
@@ -21,12 +21,12 @@ export default function ContactForm({ buttonLabel }) {
     setName(event.target.value);
 
     if (!event.target.value) {
-      setErrors((prevState) => [
-        ...prevState,
-        { field: 'name', message: 'Nome é obrigatório' },
-      ]);
+      setError({
+        field: 'name',
+        message: 'Nome é obrigatório',
+      });
     } else {
-      setErrors((prevState) => prevState.filter((error) => error.field !== 'name'));
+      removeError('name');
     }
   };
 
@@ -34,17 +34,9 @@ export default function ContactForm({ buttonLabel }) {
     setEmail(event.target.value);
 
     if (event.target.value && !isEmailValid(event.target.value)) {
-      const errorAlreadyExists = errors.find((error) => error.field === 'email');
-
-      if (errorAlreadyExists) {
-        return;
-      }
-      setErrors((prevState) => [
-        ...prevState,
-        { field: 'email', message: 'E-mail Inválido' },
-      ]);
+      setError({ field: 'email', message: 'E-mail Inválido' });
     } else {
-      setErrors((prevState) => prevState.filter((error) => error.field !== 'email'));
+      removeError('email');
     }
   };
 
@@ -59,21 +51,25 @@ export default function ContactForm({ buttonLabel }) {
     });
   }
 
-  console.log(errors);
-
-  function getErrorMessageByFieldName(fieldName) {
-    return errors.find((error) => error.field === fieldName)?.message;
-  }
-
   return (
   // eslint-disable-next-line react/jsx-no-bind
     <Form onSubmit={handleSubmit}>
       <FormGroup error={getErrorMessageByFieldName('name')}>
-        <Input error={getErrorMessageByFieldName('name')} placeholder="Nome" value={name} onChange={handleNameChange} />
+        <Input
+          error={getErrorMessageByFieldName('name')}
+          placeholder="Nome"
+          value={name}
+          onChange={handleNameChange}
+        />
       </FormGroup>
 
       <FormGroup error={getErrorMessageByFieldName('email')}>
-        <Input error={getErrorMessageByFieldName('email')} placeholder="E-mail" value={email} onChange={handleEmailChange} />
+        <Input
+          error={getErrorMessageByFieldName('email')}
+          placeholder="E-mail"
+          value={email}
+          onChange={handleEmailChange}
+        />
       </FormGroup>
 
       <FormGroup>
