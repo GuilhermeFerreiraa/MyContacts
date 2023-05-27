@@ -62,3 +62,26 @@ export default function Home() {
     </Container>
   );
 }
+
+// top level await
+fetch('http://localhost:3001/contacts')
+  .then((response) => {
+    console.log('response ', response);
+  })
+  .catch((error) => {
+    console.log('error ', error);
+  });
+
+//  *apenas para navegadores*
+
+// SOP -> Same Origin Policy -> Política de Mesma Origem
+
+// CORS -> Cross-Origin Resource Sharing -> Compartilhamento de origens cruzadas
+
+// Origem: protocolo://domnínio::porta - tudo o que não for protocolo domínio e porta não é considerado origem
+
+// Saída -> onde a req esta sendo feita: http://localhost:3000
+// Destino: onde a req está chegando: http://localhost:3000
+
+// eslint-disable-next-line max-len
+// toda vez que ferimos a politica de mesma origem (SAME ORIGIN) ela passa a ser considerada do tipo CORS
