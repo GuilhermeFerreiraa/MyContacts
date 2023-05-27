@@ -14,7 +14,14 @@ export default function ContactForm({ buttonLabel }) {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [category, setCategory] = useState('');
-  const { setError, removeError, getErrorMessageByFieldName } = useErrors();
+  const {
+    errors,
+    setError,
+    removeError,
+    getErrorMessageByFieldName,
+  } = useErrors();
+
+  const isFormValid = (name && errors.length === 0);
   // One way data binding - react = single source of truth
   // Two way data binding - angular e vue
 
@@ -48,12 +55,12 @@ export default function ContactForm({ buttonLabel }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    console.log({
-      name,
-      email,
-      phone: phone.replace(/\D/g, ''),
-      category,
-    });
+  // console.log({
+  //   name,
+  //   email,
+  //   phone: phone.replace(/\D/g, ''),
+  //   category,
+  // });
   }
 
   return (
@@ -61,10 +68,10 @@ export default function ContactForm({ buttonLabel }) {
     <Form onSubmit={handleSubmit} noValidate>
       <FormGroup error={getErrorMessageByFieldName('name')}>
         <Input
-          error={getErrorMessageByFieldName('name')}
-          placeholder="Nome"
           value={name}
+          placeholder="Nome *"
           onChange={handleNameChange}
+          error={getErrorMessageByFieldName('name')}
         />
       </FormGroup>
 
@@ -97,7 +104,9 @@ export default function ContactForm({ buttonLabel }) {
       </FormGroup>
 
       <ButtonContainer>
-        <Button type="submit">{buttonLabel}</Button>
+        <Button type="submit" disabled={!isFormValid}>
+          {buttonLabel}
+        </Button>
       </ButtonContainer>
     </Form>
   );

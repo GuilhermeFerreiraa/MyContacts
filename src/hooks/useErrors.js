@@ -13,21 +13,21 @@ export default function useErrors() {
       return;
     }
 
-    setErrors((prevState) => [
-      ...prevState,
-      { field, message },
-    ]);
+    setErrors((prevState) => [...prevState, { field, message }]);
   }
 
   function removeError(fieldName) {
-    setErrors((prevState) => prevState.filter(
-      (error) => error.field !== fieldName,
-    ));
+    setErrors((prevState) => prevState.filter((error) => error.field !== fieldName));
   }
 
   function getErrorMessageByFieldName(fieldName) {
     return errors.find((error) => error.field === fieldName)?.message;
   }
 
-  return { setError, removeError, getErrorMessageByFieldName };
+  return {
+    errors,
+    setError,
+    removeError,
+    getErrorMessageByFieldName,
+  };
 }
