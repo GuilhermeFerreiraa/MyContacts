@@ -43,17 +43,17 @@ export default function ContactForm({ buttonLabel }) {
   function handleSubmit(event) {
     event.preventDefault();
 
-    console.log({
-      name,
-      email,
-      phone,
-      category,
-    });
+    // console.log({
+    //   name,
+    //   email,
+    //   phone,
+    //   category,
+    // });
   }
 
   return (
   // eslint-disable-next-line react/jsx-no-bind
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} noValidate>
       <FormGroup error={getErrorMessageByFieldName('name')}>
         <Input
           error={getErrorMessageByFieldName('name')}
@@ -65,17 +65,19 @@ export default function ContactForm({ buttonLabel }) {
 
       <FormGroup error={getErrorMessageByFieldName('email')}>
         <Input
-          error={getErrorMessageByFieldName('email')}
-          placeholder="E-mail"
+          type="email"
           value={email}
+          placeholder="E-mail"
           onChange={handleEmailChange}
+          error={getErrorMessageByFieldName('email')}
         />
       </FormGroup>
 
       <FormGroup>
         <Input
-          placeholder="Telefone"
+          type="tel"
           value={phone}
+          placeholder="Telefone"
           onChange={(e) => setPhone(e.target.value)}
         />
       </FormGroup>

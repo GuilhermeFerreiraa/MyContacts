@@ -4,7 +4,7 @@ export default function useErrors() {
   // precisa começar com 'use' para ser um custom hook
   const [errors, setErrors] = useState([]);
 
-  console.log(errors);
+  // console.log(errors);
 
   function setError({ field, message }) {
     const errorAlreadyExists = errors.find((error) => error.field === field);
