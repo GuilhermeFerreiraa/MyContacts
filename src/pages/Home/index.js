@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import {
   Card,
   Container,
@@ -10,10 +11,26 @@ import {
 import arrow from '../../assets/images/icons/arrow.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import trash from '../../assets/images/icons/delete.svg';
+import formatPhone from '../../utils/formatPhone';
 // import Loader from '../../components/Loader';
 // import Modal from '../../components/Modal';
 
 export default function Home() {
+  const [contacts, setContacts] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/contacts')
+      .then(async (response) => {
+        const json = await response.json();
+        setContacts(json);
+      })
+      .catch((error) => {
+        console.erro('error ', error);
+      });
+  }, []);
+
+  // console.log(contacts);
+
   return (
     <Container>
       {/* <Loader /> */}
@@ -27,7 +44,11 @@ export default function Home() {
       </InputSearchContainer>
 
       <Header>
-        <strong>3 Contatos</strong>
+        <strong>
+          {contacts.length}
+          {' '}
+          {contacts.length === 1 ? 'Contato' : 'Contatos'}
+        </strong>
         <Link to="/new">Novo Contato</Link>
       </Header>
 
@@ -39,49 +60,28 @@ export default function Home() {
           </button>
         </header>
 
-        <Card>
-          <div className="info">
-            <div className="contact-name">
-              <strong>Guilherme Ferreira</strong>
-              <small>Instagram</small>
+        {contacts.map((item) => (
+          <Card key={item.id}>
+            <div className="info">
+              <div className="contact-name">
+                <strong>{item.name}</strong>
+                {item.category_name && <small>{item.category_name}</small>}
+              </div>
+              <span>{item.email}</span>
+              <span>{formatPhone(item.phone)}</span>
             </div>
-            <span>email@email.com</span>
-            <span>(11)94002-8922</span>
-          </div>
 
-          <div className="actions">
-            <Link to="/edit/:id">
-              <img src={edit} alt="edit" />
-            </Link>
-            <button type="button">
-              <img src={trash} alt="trash" />
-            </button>
-          </div>
-        </Card>
+            <div className="actions">
+              <Link to={`/edit/${item.id}`}>
+                <img src={edit} alt="edit" />
+              </Link>
+              <button type="button">
+                <img src={trash} alt="trash" />
+              </button>
+            </div>
+          </Card>
+        ))}
       </ListContainer>
     </Container>
   );
 }
-
-// top level await
-fetch('http://localhost:3001/contacts')
-  .then((response) => {
-    console.log('response ', response);
-  })
-  .catch((error) => {
-    console.log('error ', error);
-  });
-
-//  *apenas para navegadores*
-
-// SOP -> Same Origin Policy -> Política de Mesma Origem
-
-// CORS -> Cross-Origin Resource Sharing -> Compartilhamento de origens cruzadas
-
-// Origem: protocolo://domnínio::porta - tudo o que não for protocolo domínio e porta não é considerado origem
-
-// Saída -> onde a req esta sendo feita: http://localhost:3000
-// Destino: onde a req está chegando: http://localhost:3000
-
-// eslint-disable-next-line max-len
-// toda vez que ferimos a politica de mesma origem (SAME ORIGIN) ela passa a ser considerada do tipo CORS
