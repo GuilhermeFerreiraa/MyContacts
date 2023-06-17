@@ -1,35 +1,41 @@
-import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Card,
   Container,
   Header,
   InputSearchContainer,
-  ListContainer,
+  ListHeader,
 } from './styles';
 
 import arrow from '../../assets/images/icons/arrow.svg';
-import edit from '../../assets/images/icons/edit.svg';
 import trash from '../../assets/images/icons/delete.svg';
+import edit from '../../assets/images/icons/edit.svg';
 import formatPhone from '../../utils/formatPhone';
 // import Loader from '../../components/Loader';
 // import Modal from '../../components/Modal';
 
 export default function Home() {
   const [contacts, setContacts] = useState([]);
+  const [orderBy, setOrderBy] = useState('asc');
+
+  // console.log(orderBy);
 
   useEffect(() => {
-    fetch('http://localhost:3001/contacts')
+    fetch(`http://localhost:3001/contacts?orderBy=${orderBy}`)
       .then(async (response) => {
         const json = await response.json();
         setContacts(json);
       })
       .catch((error) => {
-        console.erro('error ', error);
+        console.error('error ', error);
       });
-  }, []);
+  }, [orderBy]);
 
-  // console.log(contacts);
+  const handleToggleOrderBy = () => {
+    const newOrder = orderBy === 'desc' ? 'asc' : 'desc';
+    setOrderBy(newOrder);
+  };
 
   return (
     <Container>
@@ -52,36 +58,34 @@ export default function Home() {
         <Link to="/new">Novo Contato</Link>
       </Header>
 
-      <ListContainer>
-        <header>
-          <button type="button">
-            <span>Nome</span>
-            <img src={arrow} alt="Arrow" />
-          </button>
-        </header>
+      <ListHeader orderBy={orderBy}>
+        <button type="button" onClick={handleToggleOrderBy}>
+          <span>Nome</span>
+          <img src={arrow} alt="Arrow" />
+        </button>
+      </ListHeader>
 
-        {contacts.map((item) => (
-          <Card key={item.id}>
-            <div className="info">
-              <div className="contact-name">
-                <strong>{item.name}</strong>
-                {item.category_name && <small>{item.category_name}</small>}
-              </div>
-              <span>{item.email}</span>
-              <span>{formatPhone(item.phone)}</span>
+      {contacts.map((item) => (
+        <Card key={item.id}>
+          <div className="info">
+            <div className="contact-name">
+              <strong>{item.name}</strong>
+              {item.category_name && <small>{item.category_name}</small>}
             </div>
+            <span>{item.email}</span>
+            <span>{formatPhone(item.phone)}</span>
+          </div>
 
-            <div className="actions">
-              <Link to={`/edit/${item.id}`}>
-                <img src={edit} alt="edit" />
-              </Link>
-              <button type="button">
-                <img src={trash} alt="trash" />
-              </button>
-            </div>
-          </Card>
-        ))}
-      </ListContainer>
+          <div className="actions">
+            <Link to={`/edit/${item.id}`}>
+              <img src={edit} alt="edit" />
+            </Link>
+            <button type="button">
+              <img src={trash} alt="trash" />
+            </button>
+          </div>
+        </Card>
+      ))}
     </Container>
   );
 }
