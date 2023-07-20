@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+/* eslint-disable max-len */
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card,
@@ -12,24 +13,31 @@ import arrow from '../../assets/images/icons/arrow.svg';
 import trash from '../../assets/images/icons/delete.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import formatPhone from '../../utils/formatPhone';
-// import Loader from '../../components/Loader';
-// import Modal from '../../components/Modal';
+import Loader from '../../components/Loader';
+import ContactServices from '../../services/ContactServices';
 
 export default function Home() {
   const [contacts, setContacts] = useState([]);
   const [orderBy, setOrderBy] = useState('asc');
-
-  // console.log(orderBy);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:3001/contacts?orderBy=${orderBy}`)
-      .then(async (response) => {
-        const json = await response.json();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const json = await ContactServices.listContacts(orderBy);
         setContacts(json);
-      })
-      .catch((error) => {
-        console.error('error ', error);
-      });
+      } catch (error) {
+        console.log('error ', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    return () => {};
   }, [orderBy]);
 
   const handleToggleOrderBy = () => {
@@ -37,35 +45,51 @@ export default function Home() {
     setOrderBy(newOrder);
   };
 
+  const filteredContacts = useMemo(
+    () => contacts.filter((contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase())),
+    [contacts, searchTerm],
+  );
+
+  const handleChangeSearchTerm = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <Container>
-      {/* <Loader /> */}
+      <Loader isLoading={isLoading} />
       {/* <Modal
         danger
         description="Esta ação não poderá ser desfeita!"
         title={'Tem certeza que deseja remover o contato "Guilherme Ferreira" '}
       /> */}
       <InputSearchContainer>
-        <input type="text" placeholder="Pesquisar contato..." />
+        <input
+          type="text"
+          value={searchTerm}
+          placeholder="Pesquisar contato..."
+          onChange={handleChangeSearchTerm}
+        />
       </InputSearchContainer>
 
       <Header>
         <strong>
-          {contacts.length}
+          {filteredContacts.length}
           {' '}
-          {contacts.length === 1 ? 'Contato' : 'Contatos'}
+          {filteredContacts.length === 1 ? 'Contato' : 'Contatos'}
         </strong>
         <Link to="/new">Novo Contato</Link>
       </Header>
 
-      <ListHeader orderBy={orderBy}>
+      {filteredContacts.length > 2 && (
+      <ListHeader orderby={orderBy}>
         <button type="button" onClick={handleToggleOrderBy}>
           <span>Nome</span>
           <img src={arrow} alt="Arrow" />
         </button>
       </ListHeader>
+      )}
 
-      {contacts.map((item) => (
+      {filteredContacts.map((item) => (
         <Card key={item.id}>
           <div className="info">
             <div className="contact-name">
