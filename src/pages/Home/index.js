@@ -26,9 +26,10 @@ export default function Home() {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const json = await ContactServices.listContacts(orderBy);
-        setContacts(json);
+        const contactsList = await ContactServices.listContacts(orderBy);
+        setContacts(contactsList);
       } catch (error) {
+        // eslint-disable-next-line
         console.log('error ', error);
       } finally {
         setIsLoading(false);
