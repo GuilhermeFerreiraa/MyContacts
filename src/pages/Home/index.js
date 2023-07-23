@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Card,
   Container,
+  ErrorContainer,
   Header,
   InputSearchContainer,
   ListHeader,
@@ -14,28 +15,31 @@ import trash from '../../assets/images/icons/delete.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import formatPhone from '../../utils/formatPhone';
 import Loader from '../../components/Loader';
+import sad from '../../assets/images/sad.svg';
 import ContactServices from '../../services/ContactServices';
+import Button from '../../components/Button';
 
 export default function Home() {
   const [contacts, setContacts] = useState([]);
   const [orderBy, setOrderBy] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const contactsList = await ContactServices.listContacts(orderBy);
+
+      setContacts(contactsList);
+    } catch (error) {
+      setHasError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const contactsList = await ContactServices.listContacts(orderBy);
-        setContacts(contactsList);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log('error ', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchData();
 
     return () => {};
@@ -72,14 +76,28 @@ export default function Home() {
         />
       </InputSearchContainer>
 
-      <Header>
+      <Header haserror={hasError ? true : undefined}>
+        {!hasError && (
         <strong>
           {filteredContacts.length}
           {' '}
           {filteredContacts.length === 1 ? 'Contato' : 'Contatos'}
         </strong>
+        )}
         <Link to="/new">Novo Contato</Link>
       </Header>
+
+      {hasError && (
+      <ErrorContainer>
+        <img src={sad} alt="icon-bad" />
+        <div className="details">
+          <span>Ocorreu um erro ao obter os seus contatos!</span>
+          <Button type="button" onClick={fetchData}>
+            Tente Novamente
+          </Button>
+        </div>
+      </ErrorContainer>
+      )}
 
       {filteredContacts.length > 2 && (
       <ListHeader orderby={orderBy}>

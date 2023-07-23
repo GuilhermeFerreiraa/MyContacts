@@ -1,4 +1,5 @@
 import delay from '../../utils/delay';
+import APIError from '../../errors/APIError';
 
 class HttpClient {
   constructor(baseURL) {
@@ -8,12 +9,21 @@ class HttpClient {
   // eslint-disable-next-line class-methods-use-this
   async get(path) {
     await delay(500);
-    const response = await fetch(`${this.baseURL}/${path}`);
+    const response = await fetch(`${this.baseURL}${path}`);
+
+    let body = null;
+
+    const contentType = response.headers.get('Content-Type');
+
+    if (contentType.includes('application/json')) {
+      body = await response.json();
+    }
 
     if (response.ok) {
-      return response.json();
+      return body;
     }
-    throw new Error(`${response.statusText} - ${response.status}`);
+
+    throw new APIError(response, body);
   }
 }
 
