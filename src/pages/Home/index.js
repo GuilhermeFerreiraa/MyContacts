@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card,
@@ -26,24 +28,22 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const contactsList = await ContactServices.listContacts(orderBy);
-
+      setHasError(false);
       setContacts(contactsList);
     } catch (error) {
       setHasError(true);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [orderBy]);
 
   useEffect(() => {
     fetchData();
-
-    return () => {};
-  }, [orderBy]);
+  }, [fetchData]);
 
   const handleToggleOrderBy = () => {
     const newOrder = orderBy === 'desc' ? 'asc' : 'desc';
@@ -57,6 +57,10 @@ export default function Home() {
 
   const handleChangeSearchTerm = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleTryAgain = () => {
+    fetchData();
   };
 
   return (
@@ -92,43 +96,47 @@ export default function Home() {
         <img src={sad} alt="icon-bad" />
         <div className="details">
           <span>Ocorreu um erro ao obter os seus contatos!</span>
-          <Button type="button" onClick={fetchData}>
+          <Button type="button" onClick={handleTryAgain}>
             Tente Novamente
           </Button>
         </div>
       </ErrorContainer>
       )}
 
-      {filteredContacts.length > 2 && (
-      <ListHeader orderby={orderBy}>
-        <button type="button" onClick={handleToggleOrderBy}>
-          <span>Nome</span>
-          <img src={arrow} alt="Arrow" />
-        </button>
-      </ListHeader>
-      )}
+      {!hasError && (
+      <>
+        {filteredContacts.length > 2 && (
+        <ListHeader orderby={orderBy}>
+          <button type="button" onClick={handleToggleOrderBy}>
+            <span>Nome</span>
+            <img src={arrow} alt="Arrow" />
+          </button>
+        </ListHeader>
+        )}
 
-      {filteredContacts.map((item) => (
-        <Card key={item.id}>
-          <div className="info">
-            <div className="contact-name">
-              <strong>{item.name}</strong>
-              {item.category_name && <small>{item.category_name}</small>}
+        {filteredContacts.map((item) => (
+          <Card key={item.id}>
+            <div className="info">
+              <div className="contact-name">
+                <strong>{item.name}</strong>
+                {item.category_name && <small>{item.category_name}</small>}
+              </div>
+              <span>{item.email}</span>
+              <span>{formatPhone(item.phone)}</span>
             </div>
-            <span>{item.email}</span>
-            <span>{formatPhone(item.phone)}</span>
-          </div>
 
-          <div className="actions">
-            <Link to={`/edit/${item.id}`}>
-              <img src={edit} alt="edit" />
-            </Link>
-            <button type="button">
-              <img src={trash} alt="trash" />
-            </button>
-          </div>
-        </Card>
-      ))}
+            <div className="actions">
+              <Link to={`/edit/${item.id}`}>
+                <img src={edit} alt="edit" />
+              </Link>
+              <button type="button">
+                <img src={trash} alt="trash" />
+              </button>
+            </div>
+          </Card>
+        ))}
+      </>
+      )}
     </Container>
   );
 }
