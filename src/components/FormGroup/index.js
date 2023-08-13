@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import { Container } from './styles';
 
-export default function FormGroup({ children, error }) {
+export default function FormGroup({ children, isloading, error }) {
   return (
     <Container>
-      {children}
+      <div className="form-item">
+        {children}
+
+        {isloading && <div className="loader" />}
+      </div>
       {error && <small>{error}</small>}
     </Container>
   );
@@ -13,8 +17,10 @@ export default function FormGroup({ children, error }) {
 FormGroup.propTypes = {
   children: PropTypes.node.isRequired,
   error: PropTypes.string,
+  isloading: PropTypes.bool,
 };
 
 FormGroup.defaultProps = {
   error: null,
+  isloading: false,
 };

@@ -24,6 +24,7 @@
   "react/react-in-jsx-scope": "off",
   "linebreak-style": 0,
   "import/no-named-as-default": "off",
-  "import/prefer-default-export": "off"
+  "import/prefer-default-export": "off",
+  "no-empty": ["error", { "allowEmptyCatch": true }]
  }
 }

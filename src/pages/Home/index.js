@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable max-len */
 import {
   useCallback, useEffect, useMemo, useState,
@@ -10,6 +11,8 @@ import {
   Header,
   InputSearchContainer,
   ListHeader,
+  EmptyListContainer,
+  SearchNotFoundContainer,
 } from './styles';
 
 import arrow from '../../assets/images/icons/arrow.svg';
@@ -20,6 +23,8 @@ import Loader from '../../components/Loader';
 import sad from '../../assets/images/sad.svg';
 import ContactServices from '../../services/ContactServices';
 import Button from '../../components/Button';
+import box from '../../assets/images/empty-box.svg';
+import magnifierQuestion from '../../assets/images/magnifier-question.svg';
 
 export default function Home() {
   const [contacts, setContacts] = useState([]);
@@ -28,10 +33,18 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
+  const handleToggleOrderBy = () => {
+    const newOrder = orderBy === 'desc' ? 'asc' : 'desc';
+    setOrderBy(newOrder);
+  };
+
   const fetchData = useCallback(async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const contactsList = await ContactServices.listContacts(orderBy);
+      // const contactsList = [];
+      // await ContactServices.listContacts(orderBy);
+
       setHasError(false);
       setContacts(contactsList);
     } catch (error) {
@@ -44,11 +57,6 @@ export default function Home() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const handleToggleOrderBy = () => {
-    const newOrder = orderBy === 'desc' ? 'asc' : 'desc';
-    setOrderBy(newOrder);
-  };
 
   const filteredContacts = useMemo(
     () => contacts.filter((contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase())),
@@ -66,11 +74,8 @@ export default function Home() {
   return (
     <Container>
       <Loader isLoading={isLoading} />
-      {/* <Modal
-        danger
-        description="Esta ação não poderá ser desfeita!"
-        title={'Tem certeza que deseja remover o contato "Guilherme Ferreira" '}
-      /> */}
+
+      {contacts.length > 0 && (
       <InputSearchContainer>
         <input
           type="text"
@@ -79,13 +84,19 @@ export default function Home() {
           onChange={handleChangeSearchTerm}
         />
       </InputSearchContainer>
+      )}
 
-      <Header haserror={hasError ? true : undefined}>
-        {!hasError && (
+      <Header
+        justifycontent={
+     // eslint-disable-next-line no-nested-ternary
+     hasError ? 'flex-end' : contacts.length > 0 ? 'space-between' : 'center'
+    }
+      >
+        {!!(!hasError && contacts.length) && (
         <strong>
-          {filteredContacts.length}
-          {' '}
-          {filteredContacts.length === 1 ? 'Contato' : 'Contatos'}
+          {`${filteredContacts.length}
+          ${filteredContacts.length === 1 ? 'Contato' : 'Contatos'}
+        `}
         </strong>
         )}
         <Link to="/new">Novo Contato</Link>
@@ -105,6 +116,30 @@ export default function Home() {
 
       {!hasError && (
       <>
+        {!isLoading && contacts.length < 1 && (
+        <EmptyListContainer>
+          <img src={box} alt="empty-box" />
+          <p>
+            Você ainda não tem nenhum contato cadastrado! Clique no botão
+            {' '}
+            <strong>"Novo Contato"</strong>
+            {' '}
+            acima para cadastrar o primeiro contato!
+          </p>
+        </EmptyListContainer>
+        )}
+
+        {(contacts.length > 0 && filteredContacts.length < 1) && (
+        <SearchNotFoundContainer>
+          <img src={magnifierQuestion} alt="magnifier-question" />
+          <span>
+            Nenhum resultado foi encontrado para
+            {' '}
+            <strong>{searchTerm}</strong>
+          </span>
+        </SearchNotFoundContainer>
+        )}
+
         {filteredContacts.length > 2 && (
         <ListHeader orderby={orderBy}>
           <button type="button" onClick={handleToggleOrderBy}>

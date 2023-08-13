@@ -28,7 +28,7 @@ export const InputSearchContainer = styled.div`
 export const Header = styled.header`
  display: flex;
  align-items: center;
- justify-content: ${({ haserror }) => (haserror ? 'flex-end' : 'space-between')};
+ justify-content: ${({ justifycontent }) => justifycontent};
  margin-top: 32px;
  border-bottom: 2px solid ${({ theme }) => theme.colors.gray[100]};
  padding-bottom: 16px;
@@ -66,7 +66,6 @@ export const ListHeader = styled.header`
   display: flex;
   align-items: center;
 
-
   span {
    margin-right: 8px;
    font-weight: bold;
@@ -77,8 +76,7 @@ export const ListHeader = styled.header`
    transform: ${({ orderby }) => (orderby === 'asc' ? 'rotate(-180deg)' : 'rotate(0deg)')};
    transition: transform 0.2s ease-in;
   }
-
-}
+ }
 `;
 
 export const Card = styled.div`
@@ -140,16 +138,44 @@ export const ErrorContainer = styled.div`
  column-gap: 24px;
 
  .details {
-
   span {
    font-size: 22px;
    font-weight: 700;
-   color: ${({ theme }) => theme.colors.danger.main}
+   color: ${({ theme }) => theme.colors.danger.main};
   }
 
   display: flex;
   flex-direction: column;
   row-gap: 8px;
   align-items: flex-start;
+ }
+`;
+
+export const EmptyListContainer = styled.div`
+ margin-top: 16px;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ gap: 16px;
+
+ p {
+  text-align: center;
+  color: ${({ theme }) => theme.colors.gray[200]};
+
+  strong {
+   color: ${({ theme }) => theme.colors.primary.main};
+  }
+ }
+`;
+
+export const SearchNotFoundContainer = styled.div`
+ display: flex;
+ margin-top: 16px;
+ column-gap: 24px;
+ align-items: flex-start;
+ word-break: break-word;
+
+ span {
+  color: ${({ theme }) => theme.colors.gray[200]};
  }
 `;

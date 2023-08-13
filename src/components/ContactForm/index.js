@@ -1,5 +1,6 @@
+/* eslint-disable no-console */
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../Button';
 import FormGroup from '../FormGroup';
 import Input from '../Input';
@@ -8,20 +9,21 @@ import { ButtonContainer, Form } from './styles';
 import isEmailValid from '../../utils/isEmailValid';
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
+import CategoriesService from '../../services/CategoryServices';
 
 export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [category, setCategory] = useState('');
+  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [categoryId, setCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
+
   const {
-    errors,
-    setError,
-    removeError,
-    getErrorMessageByFieldName,
+    errors, setError, removeError, getErrorMessageByFieldName,
   } = useErrors();
 
-  const isFormValid = (name && errors.length === 0);
+  const isFormValid = name && errors.length === 0;
   // One way data binding - react = single source of truth
   // Two way data binding - angular e vue
 
@@ -52,16 +54,31 @@ export default function ContactForm({ buttonLabel }) {
     setPhone(formatPhone(event.target.value));
   };
 
-  function handleSubmit(event) {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-  // console.log({
-  //   name,
-  //   email,
-  //   phone: phone.replace(/\D/g, ''),
-  //   category,
-  // });
-  }
+    // eslint-disable-next-line no-console
+    console.log({
+      name,
+      email,
+      phone: phone.replace(/\D/g, ''),
+      categoryId,
+    });
+  };
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setIsLoadingCategories(true);
+        const categoriesList = await CategoriesService.listCategories();
+        setCategories(categoriesList);
+      } catch {} finally {
+        setIsLoadingCategories((prevState) => !prevState);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
   // eslint-disable-next-line react/jsx-no-bind
@@ -95,11 +112,19 @@ export default function ContactForm({ buttonLabel }) {
         />
       </FormGroup>
 
-      <FormGroup>
-        <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="">Categoria</option>
-          <option value="instagram">Instagram</option>
-          <option value="Discord">Discord</option>
+      <FormGroup isloading={isLoadingCategories}>
+        <Select
+          value={categoryId}
+          onChange={(e) => setCategoryId(e.target.value)}
+          disabled={isLoadingCategories}
+        >
+          <option value="">Sem Categoria</option>
+
+          {categories.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
         </Select>
       </FormGroup>
 
