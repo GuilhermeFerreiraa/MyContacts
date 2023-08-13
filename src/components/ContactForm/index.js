@@ -11,7 +11,7 @@ import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
 import CategoriesService from '../../services/CategoryServices';
 
-export default function ContactForm({ buttonLabel }) {
+export default function ContactForm({ buttonLabel, onSubmit }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -56,12 +56,10 @@ export default function ContactForm({ buttonLabel }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // eslint-disable-next-line no-console
-    console.log({
+    onSubmit({
       name,
       email,
-      phone: phone.replace(/\D/g, ''),
+      phone,
       categoryId,
     });
   };
@@ -136,11 +134,7 @@ export default function ContactForm({ buttonLabel }) {
     </Form>
   );
 }
-
 ContactForm.propTypes = {
-  buttonLabel: PropTypes.string,
-};
-
-ContactForm.defaultProps = {
-  buttonLabel: PropTypes.string,
+  buttonLabel: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
