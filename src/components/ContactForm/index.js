@@ -18,6 +18,7 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [categoryId, setCategoryId] = useState('');
   const [categories, setCategories] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     errors, setError, removeError, getErrorMessageByFieldName,
@@ -54,14 +55,16 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
     setPhone(formatPhone(event.target.value));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    setIsSubmitting(true);
     event.preventDefault();
-    onSubmit({
+    await onSubmit({
       name,
       email,
       phone,
       categoryId,
     });
+    setIsSubmitting((prevState) => !prevState);
   };
 
   useEffect(() => {
@@ -83,6 +86,7 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
     <Form onSubmit={handleSubmit} noValidate>
       <FormGroup error={getErrorMessageByFieldName('name')}>
         <Input
+          disabled={isSubmitting}
           value={name}
           placeholder="Nome *"
           onChange={handleNameChange}
@@ -92,6 +96,7 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
 
       <FormGroup error={getErrorMessageByFieldName('email')}>
         <Input
+          disabled={isSubmitting}
           type="email"
           value={email}
           placeholder="E-mail"
@@ -102,6 +107,7 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
 
       <FormGroup>
         <Input
+          disabled={isSubmitting}
           type="tel"
           maxLength={15}
           value={phone}
@@ -114,7 +120,7 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
         <Select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          disabled={isLoadingCategories}
+          disabled={isLoadingCategories || isSubmitting}
         >
           <option value="">Sem Categoria</option>
 
@@ -127,13 +133,18 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
       </FormGroup>
 
       <ButtonContainer>
-        <Button type="submit" disabled={!isFormValid}>
+        <Button
+          type="submit"
+          disabled={!isFormValid}
+          isLoading={isSubmitting}
+        >
           {buttonLabel}
         </Button>
       </ButtonContainer>
     </Form>
   );
 }
+
 ContactForm.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
   onSubmit: PropTypes.func.isRequired,
