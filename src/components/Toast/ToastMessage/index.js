@@ -12,7 +12,12 @@ export default function ToastMessage({
   };
 
   return (
-    <Container type={message.type} onClick={handleRemoveToast}>
+    <Container
+      tabIndex={0}
+      role="button"
+      type={message.type}
+      onClick={handleRemoveToast}
+    >
       {message.type !== 'default' && (
       <img
         src={message.type === 'error' ? xCircleIcon : checkCircleIcon}
