@@ -9,12 +9,12 @@ export const StyledButton = styled.button`
  font-weight: bold;
  border-radius: 4px;
  border-radius: 4px;
- transition: background 0.2s ease-in;
+ transition: all 0.2s ease-in;
  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.04);
  background-color: ${({ theme }) => theme.colors.primary.main};
-display: flex;
-align-items:center;
-justify-content: center;
+ display: flex;
+ align-items: center;
+ justify-content: center;
 
  &:hover {
   background-color: ${({ theme }) => theme.colors.primary.light};
