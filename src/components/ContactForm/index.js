@@ -12,14 +12,15 @@ import isEmailValid from '../../utils/isEmailValid';
 import useErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
 import CategoriesService from '../../services/CategoryServices';
+import useSafeAsyncState from '../../hooks/useSafeAsyncState';
 
 const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
+  const [isLoadingCategories, setIsLoadingCategories] = useSafeAsyncState(false);
   const [categoryId, setCategoryId] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useSafeAsyncState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useImperativeHandle(ref, () => ({
@@ -96,7 +97,7 @@ const ContactForm = forwardRef(({ buttonLabel, onSubmit }, ref) => {
     };
 
     fetchCategories();
-  }, []);
+  }, [setCategories, setIsLoadingCategories]);
 
   return (
   // eslint-disable-next-line react/jsx-no-bind

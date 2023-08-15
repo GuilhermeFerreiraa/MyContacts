@@ -8,11 +8,13 @@ import Loader from '../../components/Loader';
 import PageHeader from '../../components/PageHeader';
 import ContactServices from '../../services/ContactServices';
 import toast from '../../utils/toast';
+import useSafeAsyncAction from '../../hooks/useSafeAsyncAction';
 
 export default function EditContact() {
   const { id } = useParams();
 
   const history = useHistory();
+  const safeAsyncAction = useSafeAsyncAction();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,23 +26,25 @@ export default function EditContact() {
       try {
         const contact = await ContactServices.getContactById(id);
 
-        contactFormRef.current.setFieldsValues(contact);
-
-        setContactName(contact.name);
-
-        setIsLoading((prevState) => !prevState);
+        safeAsyncAction(() => {
+          contactFormRef.current.setFieldsValues(contact);
+          setIsLoading((prevState) => !prevState);
+          setContactName(contact.name);
+        });
       } catch {
-        history.push('/');
+        safeAsyncAction(() => {
+          history.push('/');
 
-        toast({
-          type: 'error',
-          text: 'contato não encontrado!',
+          toast({
+            type: 'error',
+            text: 'contato não encontrado!',
+          });
         });
       }
     };
 
     loadContact();
-  }, [id, history]);
+  }, [id, history, safeAsyncAction]);
 
   const handleSubmit = async (formData) => {
     try {
