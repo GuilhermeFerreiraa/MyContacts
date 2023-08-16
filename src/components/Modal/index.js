@@ -1,4 +1,5 @@
 import { PropTypes } from 'prop-types';
+import { useEffect, useState } from 'react';
 import { Container, Footer, Overlay } from './styles';
 import Button from '../Button';
 import ReactPortal from '../ReactPortal';
@@ -14,14 +15,26 @@ export default function Modal({
   visible,
   isLoading,
 }) {
-  if (!visible) {
+  const [shouldRender, setShouldRender] = useState(visible);
+
+  useEffect(() => {
+    if (visible) {
+      setShouldRender(true);
+    }
+
+    if (!visible) {
+      setShouldRender(false);
+    }
+  }, [visible]);
+
+  if (!shouldRender) {
     return null;
   }
 
   return (
     <ReactPortal containerId="modal-root">
       <Overlay>
-        <Container danger={danger}>
+        <Container danger={danger.toString()}>
           <h1>{title || 'Título do Modal'}</h1>
           <div className="modal-body">{children}</div>
           <Footer>
@@ -34,10 +47,10 @@ export default function Modal({
               {cancelLabel}
             </button>
             <Button
-              isLoading={isLoading}
+              type="button"
               danger={danger}
               onClick={onConfirm}
-              type="button"
+              isLoading={isLoading}
             >
               {confirmLabel}
             </Button>

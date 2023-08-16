@@ -14,7 +14,7 @@ export default function Button({
   return (
     <StyledButton
       type={type}
-      danger={danger}
+      danger={danger.toString()}
       onClick={onClick}
       disabled={disabled || isLoading}
     >
@@ -34,7 +34,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
-  danger: true,
+  danger: false,
   type: 'button',
   disabled: false,
   isLoading: false,

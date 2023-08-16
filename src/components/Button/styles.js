@@ -29,18 +29,16 @@ export const StyledButton = styled.button`
   cursor: default;
  }
 
- ${({ theme, danger }) => (danger === 'true'
-    ? css`
-        background: ${theme.colors.danger.main};
+ ${({ theme, danger }) => danger
+  && css`
+   background: ${theme.colors.danger.main};
 
-        &:hover {
-          background-color: ${theme.colors.danger.light};
-        }
+   &:hover {
+    background-color: ${theme.colors.danger.light};
+   }
 
-        &:active {
-          background-color: ${theme.colors.danger.dark};
-        }
-      `
-    : '')}
-
+   &:active {
+    background-color: ${theme.colors.danger.dark};
+   }
+  `}
 `;
