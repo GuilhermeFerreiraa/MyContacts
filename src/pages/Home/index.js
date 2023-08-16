@@ -1,110 +1,47 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable max-len */
-import {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card,
   Container,
+  EmptyListContainer,
   ErrorContainer,
   Header,
   InputSearchContainer,
   ListHeader,
-  EmptyListContainer,
   SearchNotFoundContainer,
 } from './styles';
 
+import box from '../../assets/images/empty-box.svg';
 import arrow from '../../assets/images/icons/arrow.svg';
 import trash from '../../assets/images/icons/delete.svg';
 import edit from '../../assets/images/icons/edit.svg';
-import formatPhone from '../../utils/formatPhone';
-import Loader from '../../components/Loader';
-import sad from '../../assets/images/sad.svg';
-import ContactServices from '../../services/ContactServices';
-import Button from '../../components/Button';
-import box from '../../assets/images/empty-box.svg';
 import magnifierQuestion from '../../assets/images/magnifier-question.svg';
+import sad from '../../assets/images/sad.svg';
+import Button from '../../components/Button';
+import Loader from '../../components/Loader';
 import Modal from '../../components/Modal';
-import toast from '../../utils/toast';
+import formatPhone from '../../utils/formatPhone';
+import useHome from './useHome';
 
 export default function Home() {
-  const [contacts, setContacts] = useState([]);
-  const [orderBy, setOrderBy] = useState('asc');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingDelete, setIsLoadingDelete] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [contactBeingDeleted, setContactBeingDeleted] = useState(null);
-
-  const handleToggleOrderBy = () => {
-    const newOrder = orderBy === 'desc' ? 'asc' : 'desc';
-    setOrderBy(newOrder);
-  };
-
-  const fetchData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const contactsList = await ContactServices.listContacts(orderBy);
-      // const contactsList = [];
-      // await ContactServices.listContacts(orderBy);
-
-      setHasError(false);
-      setContacts(contactsList);
-    } catch (error) {
-      setHasError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [orderBy]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const filteredContacts = useMemo(
-    () => contacts.filter((contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase())),
-    [contacts, searchTerm],
-  );
-
-  const handleChangeSearchTerm = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleTryAgain = () => {
-    fetchData();
-  };
-
-  const handleDeleteContact = (contact) => {
-    setIsDeleteModalVisible((prevState) => !prevState);
-    setContactBeingDeleted(contact);
-  };
-
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalVisible((prevState) => !prevState);
-    setContactBeingDeleted(null);
-  };
-
-  const handleConfirmDeleteContact = async () => {
-    try {
-      setIsLoadingDelete(true);
-
-      await ContactServices.deleteContact(contactBeingDeleted.id);
-
-      setContacts((prevState) => prevState.filter(
-        (contact) => contact.id !== contactBeingDeleted.id,
-      ));
-
-      handleCloseDeleteModal();
-
-      toast({ type: 'success', text: 'Contato deletado com sucesso!' });
-    } catch {
-      toast({ type: 'error', text: 'Erro ao excluir contato!' });
-    } finally {
-      setIsLoadingDelete(false);
-    }
-  };
+  const {
+    isLoading,
+    isLoadingDelete,
+    isDeleteModalVisible,
+    contactBeingDeleted,
+    contacts,
+    searchTerm,
+    hasError,
+    filteredContacts,
+    orderBy,
+    handleTryAgain,
+    handleToggleOrderBy,
+    handleDeleteContact,
+    handleChangeSearchTerm,
+    handleCloseDeleteModal,
+    handleConfirmDeleteContact,
+  } = useHome();
 
   return (
     <Container>
