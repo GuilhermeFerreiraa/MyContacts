@@ -14,7 +14,7 @@ export default function Button({
   return (
     <StyledButton
       type={type}
-      danger={danger.toString()}
+      danger={danger ? 'true' : undefined}
       onClick={onClick}
       disabled={disabled || isLoading}
     >

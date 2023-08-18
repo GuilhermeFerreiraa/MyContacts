@@ -1,8 +1,8 @@
 import { PropTypes } from 'prop-types';
-import { useEffect, useState } from 'react';
-import { Container, Footer, Overlay } from './styles';
+import useAnimatedUnmount from '../../hooks/useAnimatedUnmount';
 import Button from '../Button';
 import ReactPortal from '../ReactPortal';
+import { Container, Footer, Overlay } from './styles';
 
 export default function Modal({
   title,
@@ -15,17 +15,7 @@ export default function Modal({
   visible,
   isLoading,
 }) {
-  const [shouldRender, setShouldRender] = useState(visible);
-
-  useEffect(() => {
-    if (visible) {
-      setShouldRender(true);
-    }
-
-    if (!visible) {
-      setShouldRender(false);
-    }
-  }, [visible]);
+  const { shouldRender, animatedElementRef } = useAnimatedUnmount(visible);
 
   if (!shouldRender) {
     return null;
@@ -33,8 +23,11 @@ export default function Modal({
 
   return (
     <ReactPortal containerId="modal-root">
-      <Overlay>
-        <Container danger={danger.toString()}>
+      <Overlay isleaving={!visible ? 'true' : undefined} ref={animatedElementRef}>
+        <Container
+          danger={danger.toString()}
+          isleaving={!visible ? 'true' : undefined}
+        >
           <h1>{title || 'Título do Modal'}</h1>
           <div className="modal-body">{children}</div>
           <Footer>

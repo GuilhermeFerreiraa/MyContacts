@@ -75,7 +75,7 @@ export default function useHome() {
 
       handleCloseDeleteModal();
 
-      toast({ type: 'success', text: 'Contato deletado com sucesso!' });
+      toast({ type: 'success', text: 'Contato excluído com sucesso!' });
     } catch {
       toast({ type: 'error', text: 'Erro ao excluir contato!' });
     } finally {
